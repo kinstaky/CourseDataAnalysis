@@ -72,14 +72,14 @@ void readTree() {
     Long64_t nentries = tree->GetEntries();//得到tree的事件总数
 
     // 刻度tx
-    tree->Draw("td-tu>>tdiff(140, -20, 50)", "", "");
+    tree->Draw("td-tu>>tdiff(280, -20, 50)", "", "");
     // c1->Draw();
     TH1D *tdiff = (TH1D*)gDirectory->Get("tdiff");
-    TH1D *dtd = new TH1D("dtd", "dt/dx", 141, -20.25, 50.25);
+    TH1D *dtd = new TH1D("dtd", "dt/dx", 279, -19.875, 49.875);
     Double_t lastBin = tdiff->GetBinContent(1);
     for (int i = 2; i < tdiff->GetNbinsX(); ++i) {
         Double_t bin = tdiff->GetBinContent(i);
-        dtd->Fill(tdiff->GetBinLowEdge(i+1), bin-lastBin);
+        dtd->Fill(tdiff->GetBinLowEdge(i), bin-lastBin);
         lastBin = bin;
     }
     dtd->Sumw2(0);
@@ -101,13 +101,13 @@ void readTree() {
     delete f1, f2;
 
     // 刻度qx
-    tree->Draw("log(qu)-log(qd)>>qdiff(80, -0.8, 0.8)", "", "");
+    tree->Draw("log(qu)-log(qd)>>qdiff(320, -0.8, 0.8)", "", "");
     TH1D *qdiff = (TH1D*)gDirectory->Get("qdiff");
-    TH1D *dqd = new TH1D("dqd", "dq/dx", 81, -0.81, 0.81);
+    TH1D *dqd = new TH1D("dqd", "dq/dx", 319, -0.7975, 0.7975);
     lastBin = qdiff->GetBinContent(1);
     for (int i = 2; i < qdiff->GetNbinsX(); ++i) {
         Double_t bin = qdiff->GetBinContent(i);
-        dqd->Fill(qdiff->GetBinLowEdge(i+1), bin-lastBin);
+        dqd->Fill(qdiff->GetBinLowEdge(i), bin-lastBin);
         lastBin = bin;
     }
     dqd->Sumw2(0);
@@ -145,21 +145,45 @@ void readTree() {
 
         xTree->Fill();
     }
+    tree->AddFriend(xTree);
+
+    // 分析一下tx和qx
+    tree->Draw("x:tx-x >> h2tx(120, -12, 12, 120, -120, 120)", "", "colz");
+    TH2D *h2tx = (TH2D*)(gDirectory->Get("h2tx"));
+    TH1D *htxRes = h2tx->ProjectionX();
+    htxRes->Fit("gaus");
+
+    tree->Draw("x:qx-x>>h2qx(120, -60, 60, 120, -120, 120)", "", "colz");
+    TH2D *h2qx = (TH2D*)(gDirectory->Get("h2qx"));
+    TH1D *hqxRes = h2qx->ProjectionX();
+    hqxRes->Fit("gaus");
 
 
 
     // 修正TOF
-    tree->AddFriend(xTree);
+    // 绝对刻度方法
     tree->Draw("ctof >> hgctof(100, 39, 48)", "abs(tx)<5 && ctof<45", "goff");
     TH1D *hgctof = (TH1D*)gDirectory->Get("hgctof");
     f1 = new TF1("f1", "gaus", 42, 45);
     hgctof->Fit(f1, "R");
     Double_t tof0 = f1->GetParameter(1);
     Double_t tofFix = realTof0 - tof0;
-    // cout << "tofFix = " << tofFix << endl;
-    // tree->Draw("(ctof-26.1941)*500/sqrt(502.5*502.5+tx*tx):tx >> hgctofx(100, -120, 120, 100, 15, 19)", "", "colz");
-    // tree->Draw("(ctof-26.1941)*500/sqrt(502.5*502.5+tx*tx):tx", "", "colz");
     delete f1;
+
+    // 拟合方法
+    tree->Draw("ctof:tx >> ctofx", "ctof < 45", "goff");
+    TH2D *ctofx = (TH2D*)gDirectory->Get("ctofx");
+    TProfile *ctofxpx = ctofx->ProfileX();
+    ctofxpx->Sumw2(0);
+    ctofxpx->GetYaxis()->SetRangeUser(42.8, 43.5);
+    ctofxpx->Draw();
+    f1 = new TF1("f1", "-[0]+[1]*sqrt(x*x+502.5*502.5)/100.0", -100, 100);
+    f1->SetParName(0, "TOF_fix");
+    f1->SetParName(1, "ntof");
+    ctofxpx->Fit(f1, "R");
+    c1->Draw();
+    delete f1;
+
 
 
     for (Long64_t jentry = 0; jentry != nentries; ++jentry) {
