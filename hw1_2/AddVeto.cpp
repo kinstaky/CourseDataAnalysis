@@ -80,9 +80,9 @@ void AddVeto::Loop()
     opt->Branch("qu", &qu, "qu/D");
     opt->Branch("qd", &qd, "qd/D");
     opt->Branch("itu", &itu, "itu/I");
-    opt->Branch("itd", &itd, "itd/i");
-    opt->Branch("iqu", &iqu, "iqu/i");
-    opt->Branch("iqd", &iqd, "iqd/i");
+    opt->Branch("itd", &itd, "itd/I");
+    opt->Branch("iqu", &iqu, "iqu/I");
+    opt->Branch("iqd", &iqd, "iqd/I");
     opt->Branch("diff", &diff, "diff/D");
     // new data
     opt->Branch("vx", &vx, "vx/D");
