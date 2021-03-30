@@ -77,7 +77,7 @@ void readTree() {
     TH1D *tdiff = (TH1D*)gDirectory->Get("tdiff");
     TH1D *dtd = new TH1D("dtd", "dt/dx", 279, -19.875, 49.875);
     Double_t lastBin = tdiff->GetBinContent(1);
-    for (int i = 2; i < tdiff->GetNbinsX(); ++i) {
+    for (int i = 2; i <= tdiff->GetNbinsX(); ++i) {
         Double_t bin = tdiff->GetBinContent(i);
         dtd->Fill(tdiff->GetBinLowEdge(i), bin-lastBin);
         lastBin = bin;
@@ -105,7 +105,7 @@ void readTree() {
     TH1D *qdiff = (TH1D*)gDirectory->Get("qdiff");
     TH1D *dqd = new TH1D("dqd", "dq/dx", 319, -0.7975, 0.7975);
     lastBin = qdiff->GetBinContent(1);
-    for (int i = 2; i < qdiff->GetNbinsX(); ++i) {
+    for (int i = 2; i <= qdiff->GetNbinsX(); ++i) {
         Double_t bin = qdiff->GetBinContent(i);
         dqd->Fill(qdiff->GetBinLowEdge(i), bin-lastBin);
         lastBin = bin;
@@ -174,14 +174,14 @@ void readTree() {
     tree->Draw("ctof:tx >> ctofx", "ctof < 45", "goff");
     TH2D *ctofx = (TH2D*)gDirectory->Get("ctofx");
     TProfile *ctofxpx = ctofx->ProfileX();
-    ctofxpx->Sumw2(0);
+    // ctofxpx->Sumw2(0);
     ctofxpx->GetYaxis()->SetRangeUser(42.8, 43.5);
     ctofxpx->Draw();
     f1 = new TF1("f1", "-[0]+[1]*sqrt(x*x+502.5*502.5)/100.0", -100, 100);
     f1->SetParName(0, "TOF_fix");
     f1->SetParName(1, "ntof");
     ctofxpx->Fit(f1, "R");
-    c1->Draw();
+    // c1->Draw();
     delete f1;
 
 
