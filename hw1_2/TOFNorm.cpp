@@ -33,14 +33,16 @@ void TOFNorm::Loop()
 
 	// new file
     TFile *opf = new TFile("TOFNorm.root", "recreate");
-    TTree *opt = new TTree("tree", "tx and ntof");
+    TTree *opt = new TTree("tree", "tx ntof ce");
     // new data
     Double_t tx, ntof, ce;
     // new tree
     opt->Branch("tx", &tx, "tx/D");
+    fChain->AddFriend(opt);
 
     // itu-itd
-    fChain->SetAlias("tLimit", "(itu < 4095 && itd < 4095 && itu >= 0 && itd >= 0)");
+    opt->SetAlias("tLimit", "itu < 4095 && itd < 4095 && itu >= 0 && itd >= 0");
+    opt->SetAlias("vtLimit", "vitu < 4095 && vitd < 4095 && vitu >= 0 && vitd >= 0");
     fChain->Draw("itd-itu >> tdiff(260, -700, 1900)", "tLimit");
 
 
@@ -88,7 +90,6 @@ void TOFNorm::Loop()
     // opt->Print();
 
     // test the code before
-    fChain->AddFriend(opt);
     fChain->Draw("x:tx-x >> (240, -12, 12, 240, -120, 120)", "tLimit", "colz");
 
 
