@@ -14,7 +14,7 @@ class Tracking: public trackingBase {
 public :
 	Tracking(TTree *tree = 0);
 	virtual ~Tracking();
-	virtual void Loop();
+	virtual void Loop(TTree *tree, bool sFit = true);
 private:
     // anode
     Double_t anode[5];
@@ -46,6 +46,7 @@ private:
     virtual Int_t trackInit();
     virtual void setBranch(TTree *tree);
     virtual void addTrace(TH2D *h, Double_t k, Double_t b, Int_t minBin, Int_t maxBin);
+    virtual Double_t simpleFit(TGraph *g, Double_t &k, Double_t &b);
 };
 
 #endif

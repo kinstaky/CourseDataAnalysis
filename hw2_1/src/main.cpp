@@ -3,6 +3,7 @@
 #include <TFile.h>
 #include <TString.h>
 #include <TTree.h>
+#include <ctime>
 #include "Tracking.h"
 
 // void PrintHelp() {
@@ -43,6 +44,8 @@ int main(int argc, char **argv) {
 		std::cout << "usage: ./Tracking" << std::endl;
 	}
 
+	clock_t t;
+
 	TString inFile("../data/f8ppac001.root");
 	TFile *ipf = new TFile(inFile.Data());
 	if (!ipf->IsOpen()) {
@@ -50,9 +53,33 @@ int main(int argc, char **argv) {
 	}
 	TTree *ipt = (TTree*)ipf->Get("tree");
 
-	Tracking *tk = new Tracking(ipt);
-	tk->Loop();
+	TFile *opf;
+	TTree *opt;
+
+	// opf = new TFile("../data/tracking.root", "recreate");
+	// opt = new TTree("tree", "ppac tracking traditional fit method");
+	// Tracking *tk = new Tracking(ipt);
+	// t = clock();
+	// tk->Loop(opt, false);
+	// t = clock() - t;
+	// printf("Old loop time: %f s\n", float(t) / CLOCKS_PER_SEC);
+	// opt->Write();
+	// opf->Close();
+
+	opf = new TFile("../data/tracking.root", "recreate");
+	opt = new TTree("tree", "ppac tracking new fit method");
+	Tracking *tkf = new Tracking(ipt);
+	t = clock();
+	tkf->Loop(opt);
+	t = clock() - t;
+	printf("New loop time: %f s\n", float(t) / CLOCKS_PER_SEC);
+	opt->Write();
+	opf->Close();
+	// delete opt 		no need to do this, tree was deleted when file closed
+
+
 
 	ipf->Close();
+
 	return 0;
 }
