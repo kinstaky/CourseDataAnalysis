@@ -2,3 +2,4 @@
 **/*.root
 **/*.o
 **/Tracking
+**/Simulation

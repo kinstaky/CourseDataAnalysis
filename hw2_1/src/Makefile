@@ -14,11 +14,14 @@ LDFLAGS = $(LIBS)
 
 all:
 	make Tracking
+	make Simulation
 
 Tracking: $(OBJS)
 	$(GXX) -o $@ $^ $(LDFLAGS)
 $(OBJS):%.o:%.cpp
 	$(GXX) $(CFLAGS) -c $<
+Simulation: simulation.cpp
+	$(GXX) -o $@ $(CFLAGS) $^ $(LDFLAGS)
 
 profile:
 	make Tracking_profile
@@ -29,4 +32,4 @@ $(OBJSPG):%_pg.o:%.cpp
 	$(GXX) $(CFLAGS) -pg -c -lc_p -o $@ $<
 
 clean:
-	rm *.o Tracking Tracking_profile
+	rm *.o Tracking Tracking_profile Simulation
