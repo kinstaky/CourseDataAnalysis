@@ -387,7 +387,7 @@ int Simulation::hitAndTrace(Double_t *rp, Double_t *res, TH1D **hdp) {
 int Simulation::fitResidual(TH1D **hdp, Double_t *ns) {
 	TF1 *f1 = new TF1("f1", "gaus", -0.6, 0.6);
 	for (int j = 0; j != detectors; ++j) {
-		hdp[j]->Fit(f1, "QRN");
+		hdp[j]->Fit(f1, "QRN+");
 		ns[j] = f1->GetParameter(2);
 	}
 	delete f1;
