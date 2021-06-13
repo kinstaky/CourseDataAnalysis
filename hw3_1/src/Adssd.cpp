@@ -290,7 +290,7 @@ int Adssd::selectPeaks(vector<Double_t> &spe, vector<Double_t> &pe) {
 			qpe.pop();
 		}
 		TFitResultPtr r = gc->Fit("pol1", "SQ");
-		Double_t chi2 = r->Chi2();
+		Double_t chi2 = r->Chi2() / r->Ndf();
 		if (chi2 < minChi2) {
 			minChi2 = chi2;
 			spe.clear();
